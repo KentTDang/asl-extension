@@ -93,4 +93,16 @@
 .main .submit-btn {
     border: none;
     background: transparent;
+    margin-left: 8px;
+}
+
+.tools {
+    display: flex;
+    align-items: center;
+}
+
+.notes-btn {
+    width: fit-content;
+    border: none;
+    background: transparent;
 }

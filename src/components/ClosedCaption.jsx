@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback, useRef } from "react";
 import { createUseStyles } from "react-jss";
 import { signDictionary } from "../util/signDictionary";
+import { db } from "../firebaseConfig";
+import { collection, addDoc } from "firebase/firestore"; // Firestore functions
 
 export default function ClosedCaption() {
   const [caption, setCaption] = useState("");
@@ -9,12 +11,26 @@ export default function ClosedCaption() {
   const videoRef = useRef(null);
   const styles = useStyles();
 
+  const storeCaptionInFirestore = async (captionText) => {
+    try {
+      await addDoc(collection(db, "captions"), {
+        caption: captionText,
+      });
+      console.log("Caption stored successfully!");
+    } catch (error) {
+      console.error("Error storing caption: ", error);
+    }
+  };
+
   const handleMessage = useCallback((request) => {
     if (request.action === "captionUpdate") {
       console.log("Closed Caption Request Test: ", request.text);
       setCaption(request.text);
       setAslTranslation(translateToASL(request.text));
       setCurrentVideoIndex(0); // Reset index when new translation arrives
+
+      // Store the caption in Firestore
+      storeCaptionInFirestore(request.text);
     }
   }, []);
 
