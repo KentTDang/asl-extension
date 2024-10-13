@@ -31,6 +31,8 @@ chrome.sidePanel
   });
   
   function processCaption(captionText) {
-    // Implement your caption processing logic here
     console.log("Processing caption:", captionText);
+    // After processing, send to side panel
+    chrome.runtime.sendMessage({action: 'processedCaption', text: captionText});
   }
+
