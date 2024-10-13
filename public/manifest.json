@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "My React Chrome Extension",
+  "name": "LiveHands",
   "version": "1.0",
-  "description": "A Chrome extension built with React",
+  "description": "A Chrome extension built with React to translate speech to ASL",
   "action": {
     "default_title": "Open Side Panel"
   },
