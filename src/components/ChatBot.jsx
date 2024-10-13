@@ -71,7 +71,11 @@ export default function ChatBot() {
       const completion = await openai.chat.completions.create({
         model: "gpt-4o-mini",
         messages: [
-          { role: "system", content: "You are a helpful assistant. Please respond with plain text only, without Markdown formatting." },
+          {
+            role: "system",
+            content:
+              "You are a helpful assistant. Please respond with plain text only, without Markdown formatting.",
+          },
           { role: "user", content: userInput },
         ],
       });
@@ -98,7 +102,12 @@ export default function ChatBot() {
                 <button
                   key={prompt}
                   className="card"
-                  onClick={() => onSubmit({ preventDefault: () => {}, target: { value: prompt } })}
+                  onClick={() =>
+                    onSubmit({
+                      preventDefault: () => {},
+                      target: { value: prompt },
+                    })
+                  }
                 >
                   <p>{prompt}</p>
                 </button>
@@ -112,13 +121,6 @@ export default function ChatBot() {
         </div>
 
         <div className="main-bottom">
-          <button
-            type="button"
-            className="submit-btn"
-            onClick={fetchCaptions} // Correct invocation of fetchCaptions
-          >
-            Generate Notes
-          </button>
           <form onSubmit={onSubmit} className="search-box">
             <input
               type="text"
@@ -127,15 +129,24 @@ export default function ChatBot() {
               placeholder="Enter a prompt here"
             />
             <div>
-              {loading ? (
-                <button type="submit" className="submit-btn" disabled>
-                  Loading...
+              <div className="tools">
+                <button
+                  type="button"
+                  className="notes-btn"
+                  onClick={fetchCaptions} // Correct invocation of fetchCaptions
+                >
+                  Notes
                 </button>
-              ) : (
-                <button type="submit" className="submit-btn">
-                  Send
-                </button>
-              )}
+                {loading ? (
+                  <button type="submit" className="submit-btn" disabled>
+                    Loading...
+                  </button>
+                ) : (
+                  <button type="submit" className="submit-btn">
+                    Send
+                  </button>
+                )}
+              </div>
             </div>
           </form>
         </div>
