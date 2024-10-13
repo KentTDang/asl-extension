@@ -5,10 +5,10 @@ export default function SidePanel() {
   const [caption, setCaption] = useState('');
 
   const handleMessage = useCallback((request) => {
-    if (request.action === "audioData") {
+    if (request.action === "audioUpdate") {
       setAudioLevel(request.data);
     }
-    if(request.action === "newCaption") {
+    if(request.action === "captionUpdate") {
       setCaption(request.text);
     }
   }, []);

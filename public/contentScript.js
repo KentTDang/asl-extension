@@ -84,24 +84,20 @@ function setupCaptionCapture() {
 
   function setupObserver(captionsContainer) {
     console.log('Captions container found, setting up observer');
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if(mutation.type === 'childList') {
-          const captionText = captionsContainer.textContent;
-          if(captionText) {
-            console.log('Caption:', captionText);
-            chrome.runtime.sendMessage({action: 'newCaption', text: captionText}, (response) => {
-              if (chrome.runtime.lastError) {
-                console.log("Failed to send caption:", chrome.runtime.lastError.message);
-                if (chrome.runtime.lastError.message.includes("message port closed")) {
-                  observer.disconnect();
-                  console.log("Stopped caption capture due to closed message port");
-                }
-              }
-            });
+    const observer = new MutationObserver(() => {
+      const captionText = captionsContainer.textContent.trim();
+      if (captionText) {
+        console.log('Caption:', captionText);
+        chrome.runtime.sendMessage({action: 'currentCaption', text: captionText}, (response) => {
+          if (chrome.runtime.lastError) {
+            console.log("Failed to send caption:", chrome.runtime.lastError.message);
+            if (chrome.runtime.lastError.message.includes("message port closed")) {
+              observer.disconnect();
+              console.log("Stopped caption capture due to closed message port");
+            }
           }
-        }
-      });
+        });
+      }
     });
 
     observer.observe(captionsContainer, {
