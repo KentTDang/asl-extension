@@ -2,13 +2,12 @@ import React, { useEffect, useState } from "react";
 import { createUseStyles } from "react-jss";
 import OpenAI from "openai";
 import SidePanel from "./components/SidePanel";
+import Hero from "./components/Hero";
 
 // Application Styling
 const styles = {
   container: {
     background: "gray",
-    width: 800,
-    height: 600,
   },
 };
 const useStyles = createUseStyles(styles);
@@ -50,8 +49,10 @@ export default function App() {
 
   return (
     <>
-      <div className={styles.container}>{resposne}</div>
+      <Hero />
       <SidePanel />
+      <div className={styles.container}>{resposne}</div>
+      
     </>
   );
 }
