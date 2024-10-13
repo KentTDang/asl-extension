@@ -6,7 +6,7 @@ export default function ClosedCaption() {
   const [caption, setCaption] = useState("");
   const [aslTranslation, setAslTranslation] = useState([]);
   const [currentVideoIndex, setCurrentVideoIndex] = useState(0);
-  const videoRefs = useRef([]);
+  const videoRef = useRef(null);
   const styles = useStyles();
 
   const handleMessage = useCallback((request) => {
@@ -14,7 +14,7 @@ export default function ClosedCaption() {
       console.log("Closed Caption Request Test: ", request.text);
       setCaption(request.text);
       setAslTranslation(translateToASL(request.text));
-      console.log("Hoping this works:", aslTranslation);
+      setCurrentVideoIndex(0); // Reset index when new translation arrives
     }
   }, []);
 
@@ -27,7 +27,7 @@ export default function ClosedCaption() {
     const words = text.toLowerCase().split(/\s+/);
     const aslTranslation = [];
     let hasUnknownWords = false;
-  
+
     words.forEach((word) => {
       if (word in signDictionary) {
         aslTranslation.push({
@@ -38,62 +38,52 @@ export default function ClosedCaption() {
         hasUnknownWords = true;
       }
     });
-  
+
     if (hasUnknownWords) {
-      aslTranslation.push({ word: 'unknown', asset: null });
+      aslTranslation.push({ word: "unknown", asset: null });
     }
-  
+
     return aslTranslation;
   }
 
   useEffect(() => {
-    if (
-      aslTranslation.length > 0 &&
-      currentVideoIndex < aslTranslation.length
-    ) {
-      const currentVideo = videoRefs.current[currentVideoIndex];
+    if (aslTranslation.length > 0 && currentVideoIndex < aslTranslation.length) {
+      const currentVideo = videoRef.current;
       if (currentVideo) {
         currentVideo.play();
         currentVideo.onended = () => {
           setCurrentVideoIndex((prevIndex) => prevIndex + 1);
         };
-      } else {
-        setCurrentVideoIndex((prevIndex) => prevIndex + 1);
       }
     } else if (currentVideoIndex >= aslTranslation.length) {
-      setCurrentVideoIndex(0);
+      setCurrentVideoIndex(0); // Reset index after finishing all videos
     }
   }, [aslTranslation, currentVideoIndex]);
 
   return (
-    <>
-      <div className={styles.container}>
-        <span className={styles.header}>Translation</span>
-        {caption.length === 0 ? (
-          <img src="/assets/Thumbnail.png" alt="" className={styles.imgContainer}/>
-        ) : (
-          aslTranslation.map((item, index) => (
-            <span key={index}>
-              {item.asset ? (
-                <video
-                  ref={(el) => (videoRefs.current[index] = el)}
-                  src={item.asset}
-                  alt={item.word}
-                  className={styles.imgContainer}
-                  muted
-                />
-              ) : (
-                <img src="/assets/Thumbnail.png" alt="" className={styles.imgContainer}/>
-              )}
-            </span>
-          ))
-        )}
+    <div className={styles.container}>
+      <span className={styles.header}>Translation</span>
+      {caption.length === 0 ? (
+        <img
+          src="/assets/Thumbnail.png"
+          alt=""
+          className={styles.imgContainer}
+        />
+      ) : (
+        aslTranslation[currentVideoIndex] && (
+          <video
+            ref={videoRef}
+            src={aslTranslation[currentVideoIndex].asset}
+            className={styles.imgContainer}
+            muted
+          />
+        )
+      )}
 
-        <div className={styles.captionContainer}>
-          <p className={styles.caption}>{caption}</p>
-        </div>
+      <div className={styles.captionContainer}>
+        <p className={styles.caption}>{caption}</p>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -102,10 +92,11 @@ const styles = {
     background: "#fff",
     fontFamily: " 'Poppins', sans-serif",
     borderBottom: "2px solid #e5e5e5",
+    maxHeight: "400px",
+    marginBottom: "8px",
   },
   captionContainer: {
-    width: 350,
-    height: 350,
+    height: "100px",
     fontFamily: " 'Poppins', sans-serif",
   },
   header: {
@@ -119,9 +110,9 @@ const styles = {
     fontWeight: 400,
   },
   imgContainer: {
-    width: '100%', 
-    maxHeight: '300px',
-    objectFit: 'contain',
+    width: "100%",
+    maxHeight: "300px",
+    objectFit: "contain",
   },
   gradient: {
     background: "linear-gradient(to right, #0BA8FF, #C687FF)",
