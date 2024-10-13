@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { createUseStyles } from "react-jss";
 import OpenAI from "openai";
+import SidePanel from "./components/SidePanel";
 
-
-// Application Styling 
+// Application Styling
 const styles = {
   container: {
     background: "gray",
@@ -14,9 +14,10 @@ const styles = {
 const useStyles = createUseStyles(styles);
 
 // OpenAI API Key
-const openai = new OpenAI({apiKey: process.env.REACT_APP_OPENAI_API_KEY, dangerouslyAllowBrowser: true});
-
-
+const openai = new OpenAI({
+  apiKey: process.env.REACT_APP_OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true,
+});
 
 export default function App() {
   const styles = useStyles();
@@ -47,5 +48,10 @@ export default function App() {
     fetchResponse();
   }, []);
 
-  return <div className={styles.container}>{resposne}</div>;
+  return (
+    <>
+      <div className={styles.container}>{resposne}</div>
+      <SidePanel />
+    </>
+  );
 }

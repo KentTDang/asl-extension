@@ -8,12 +8,23 @@
   },
   "permissions": [
     "scripting",
-    "sidePanel"
+    "sidePanel",
+    "activeTab",
+    "tabCapture"
   ],
   "side_panel": {
     "default_path": "index.html"
   },
   "background": {
     "service_worker": "background.js"
-  }
+  },
+  "host_permissions": [
+    "*://*.youtube.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/*"],
+      "js": ["contentScript.js"]
+    }
+  ]
 }
