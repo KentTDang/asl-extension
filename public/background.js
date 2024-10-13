@@ -4,12 +4,7 @@ chrome.sidePanel
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   try {
-    if (request.action === "audioData") {
-      // Handle audio data
-      console.log("Received audio data:", request.data);
-      chrome.runtime.sendMessage({action: 'audioUpdate', data: request.data});
-      sendResponse({received: true});
-    } else if (request.action === "currentCaption") {
+    if (request.action === "currentCaption") {
       // Handle current caption
       console.log("Received current caption:", request.text);
       chrome.runtime.sendMessage({action: 'captionUpdate', text: request.text});

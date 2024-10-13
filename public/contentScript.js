@@ -61,7 +61,7 @@ function setupCaptionCapture() {
     return;
   }
 
-  // Sends the captions to the backgroun.js
+  // Sends the captions to the background.js
   function setupObserver(captionsContainer) {
     console.log("Captions container found, setting up observer");
     const observer = new MutationObserver(() => {
@@ -113,6 +113,7 @@ function setupCaptionCapture() {
   checkForCaptionsContainer();
 }
 
+// Finds the video element 
 if (!videoElement) {
   const observer = new MutationObserver((mutations) => {
     if (!videoElement) {
@@ -132,6 +133,7 @@ if (!videoElement) {
 findYoutubeVideo();
 console.log("findYoutubeVideo called");
 
+// Destructor for content listener
 chrome.runtime.onConnect.addListener(function (port) {
   if (port.name === "contentScript") {
     port.onDisconnect.addListener(function () {
