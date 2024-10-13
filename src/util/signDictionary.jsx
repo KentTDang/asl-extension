@@ -1,5 +1,3 @@
-import { Agent } from "openai/_shims/node-types.mjs";
-
 export const signDictionary = {
     "zero": "/assets/0.mp4",
     "one": "/assets/1.mp4",
