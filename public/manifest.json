@@ -4,10 +4,27 @@
   "version": "1.0",
   "description": "A Chrome extension built with React",
   "action": {
-    "default_popup": "index.html",
-    "default_title": "Open"
+    "default_title": "Open Side Panel"
   },
   "permissions": [
-    "scripting"
+    "scripting",
+    "sidePanel",
+    "activeTab",
+    "tabCapture"
+  ],
+  "side_panel": {
+    "default_path": "index.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "host_permissions": [
+    "*://*.youtube.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["*://*.youtube.com/*"],
+      "js": ["contentScript.js"]
+    }
   ]
 }
