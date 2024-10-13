@@ -21,14 +21,14 @@
 
 .main .card {
     height: 50px;
-    background-color: #f0f4f9;
+    background: linear-gradient(90deg, #0BA8FF, #C687FF);
     border-radius: 10px;
     position: relative;
     border: none;
 }
 
 .main .card p {
-    color: #585858;
+    color: #fff;
     font-size: 17px;
 }
 
