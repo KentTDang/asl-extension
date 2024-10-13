@@ -1,71 +1,49 @@
-console.log("Content script loaded");
+/**
+ * The purpose of this file is to grab the video and closed-caption elements of youtube
+ * and display the contents in the side-panel
+ */
 
-let videoElement = null;
-let captionsEnabled = false;
+let videoElement = null; // Video Element
+let captionsEnabled = false; // Close-Caption Toggler
 
+/**
+ * This function grabs the video container on youtube and calls the closed-caption
+ * toggler function
+ */
 function findYoutubeVideo() {
-  console.log("Searching for YouTube video");
   videoElement = document.querySelector("video.html5-main-video");
   if (videoElement) {
     console.log("Youtube video found:", videoElement);
-    setupAudioCapture(videoElement);
     listenForCaptionToggle();
   } else {
     console.log("Youtube video not found");
   }
 }
 
-function setupAudioCapture(videoElement) {
-  const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  const sourceNode = audioContext.createMediaElementSource(videoElement);
-  const analyserNode = audioContext.createAnalyser();
-
-  sourceNode.connect(analyserNode);
-  analyserNode.connect(audioContext.destination);
-
-  analyserNode.fftSize = 2048;
-  const bufferLength = analyserNode.frequencyBinCount;
-  const dataArray = new Uint8Array(bufferLength);
-
-  function getAudioData() {
-    analyserNode.getByteFrequencyData(dataArray);
-    const average = dataArray.reduce((a, b) => a + b) / bufferLength;
-    return average;
-  }
-
-  let intervalId = setInterval(() => {
-    const audioLevel = getAudioData();
-    chrome.runtime.sendMessage({ action: "audioData", data: audioLevel }, (response) => {
-      if (chrome.runtime.lastError) {
-        console.log("Failed to send message:", chrome.runtime.lastError.message);
-        if (chrome.runtime.lastError.message.includes("message port closed")) {
-          clearInterval(intervalId);
-          console.log("Stopped audio capture due to closed message port");
-        }
-      }
-    });
-  }, 100);
-
-  videoElement.audioIntervalId = intervalId;
-}
-
+/** This function listens to the closed-caption button and generates the captions on the
+ * side panel
+ */
 function listenForCaptionToggle() {
-  console.log('Setting up caption toggle listener');
 
+  /** Query for the closed-caption button, currently checks for it in intervals due to the nature
+   *  of it being turned off upon launch
+   *  TODO: Optimize qeury for closed-caption button
+   */
   function checkForCaptionButton() {
-    const captionButton = document.querySelector('.ytp-subtitles-button');
+    const captionButton = document.querySelector(".ytp-subtitles-button");
     if (captionButton) {
-      console.log('Caption button found, adding click listener');
-      captionButton.addEventListener('click', handleCaptionToggle);
+      console.log("Caption button found, adding click listener");
+      captionButton.addEventListener("click", handleCaptionToggle);
     } else {
-      console.log('Caption button not found, will check again');
+      console.log("Caption button not found, will check again");
       setTimeout(checkForCaptionButton, 1000);
     }
   }
 
+  // Calls the setupCaptionsCapture if the closed-caption button is toggled on
   function handleCaptionToggle() {
     captionsEnabled = !captionsEnabled;
-    console.log('Captions toggled:', captionsEnabled ? 'enabled' : 'disabled');
+    console.log("Captions toggled:", captionsEnabled ? "enabled" : "disabled");
     if (captionsEnabled) {
       setupCaptionCapture();
     }
@@ -74,45 +52,60 @@ function listenForCaptionToggle() {
   checkForCaptionButton();
 }
 
+/** 
+ * This function captures the closed-captions
+*/
 function setupCaptionCapture() {
   if (!captionsEnabled) {
-    console.log('Captions are not enabled, skipping capture setup');
+    console.log("Captions are not enabled, skipping capture setup");
     return;
   }
 
-  console.log('Setting up caption capture');
-
+  // Sends the captions to the backgroun.js
   function setupObserver(captionsContainer) {
-    console.log('Captions container found, setting up observer');
+    console.log("Captions container found, setting up observer");
     const observer = new MutationObserver(() => {
       const captionText = captionsContainer.textContent.trim();
       if (captionText) {
-        console.log('Caption:', captionText);
-        chrome.runtime.sendMessage({action: 'currentCaption', text: captionText}, (response) => {
-          if (chrome.runtime.lastError) {
-            console.log("Failed to send caption:", chrome.runtime.lastError.message);
-            if (chrome.runtime.lastError.message.includes("message port closed")) {
-              observer.disconnect();
-              console.log("Stopped caption capture due to closed message port");
+        console.log("Caption:", captionText);
+        chrome.runtime.sendMessage(
+          { action: "currentCaption", text: captionText },
+          (response) => {
+            if (chrome.runtime.lastError) {
+              console.log(
+                "Failed to send caption:",
+                chrome.runtime.lastError.message
+              );
+              if (
+                chrome.runtime.lastError.message.includes("message port closed")
+              ) {
+                observer.disconnect();
+                console.log(
+                  "Stopped caption capture due to closed message port"
+                );
+              }
             }
           }
-        });
+        );
       }
     });
 
     observer.observe(captionsContainer, {
       childList: true,
       subtree: true,
-      characterData: true
+      characterData: true,
     });
   }
 
+  // Chekcs to see if the caption widnow container is there
   function checkForCaptionsContainer() {
-    const captionsContainer = document.querySelector('.ytp-caption-window-container');
-    if(captionsContainer) {
+    const captionsContainer = document.querySelector(
+      ".ytp-caption-window-container"
+    );
+    if (captionsContainer) {
       setupObserver(captionsContainer);
     } else {
-      console.log('Captions container not found, will check again');
+      console.log("Captions container not found, will check again");
       setTimeout(checkForCaptionsContainer, 1000);
     }
   }
@@ -139,9 +132,9 @@ if (!videoElement) {
 findYoutubeVideo();
 console.log("findYoutubeVideo called");
 
-chrome.runtime.onConnect.addListener(function(port) {
+chrome.runtime.onConnect.addListener(function (port) {
   if (port.name === "contentScript") {
-    port.onDisconnect.addListener(function() {
+    port.onDisconnect.addListener(function () {
       console.log("Content script disconnected, cleaning up...");
       if (videoElement && videoElement.audioIntervalId) {
         clearInterval(videoElement.audioIntervalId);
@@ -150,4 +143,4 @@ chrome.runtime.onConnect.addListener(function(port) {
   }
 });
 
-chrome.runtime.connect({name: "contentScript"});
+chrome.runtime.connect({ name: "contentScript" });
