@@ -102,10 +102,11 @@ const styles = {
     background: "#fff",
     fontFamily: " 'Poppins', sans-serif",
     borderBottom: "2px solid #e5e5e5",
+    maxHeight: '400px',
+    marginBottom: '8px'
   },
   captionContainer: {
-    width: 350,
-    height: 350,
+    height: '100px',
     fontFamily: " 'Poppins', sans-serif",
   },
   header: {
