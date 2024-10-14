@@ -1,7 +1,7 @@
-# Dust - HopHacks 2024
+# LiveHands - HackPSU 2024
 
 ### Demo  
-[![Demo Video](https://your-gif-url-here)](https://www.youtube.com/watch?v=2o4c61NHjY8)
+[![Demo Video](https://img.youtube.com/vi/2o4c61NHjY8/0.jpg)](https://www.youtube.com/watch?v=2o4c61NHjY8)
 
 ### Inspiration
 One of the greatest challenges in education today is the shortage of teachers equipped to support deaf students. Communication barriers hinder their ability to engage fully with lessons, making it difficult to grasp key concepts and keep up with their peers. As a result, these students often face misunderstandings that slow their academic progress. With the rise of online learning, access to effective educational tools has become even more critical.
